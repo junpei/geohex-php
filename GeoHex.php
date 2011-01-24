@@ -47,15 +47,14 @@ class GeoHex
             }
         }
 
-        if (isset($this->latitude) &&
-            isset($this->longitude))
+        if (isset($this->latitude) && isset($this->longitude))
         {
-            $this->setZoneByLocation(
+            $this->setLocation(
                 $this->latitude, $this->longitude, $this->level);
         }
 
         else if (isset($this->code)) {
-            $this->setZoneByCode($this->code);
+            $this->setCode($this->code);
         }
     }
 
@@ -63,11 +62,7 @@ class GeoHex
      * public
      */
 
-    public function getLevel()
-    {
-        return strlen($this->code) - 2;
-    }
-    public function setZoneByLocation($latitude, $longitude, $level = null)
+    public function setLocation($latitude, $longitude, $level = null)
     {
         $this->latitude  = $latitude;
         $this->longitude = $longitude;
@@ -76,7 +71,12 @@ class GeoHex
             $this->level = $level;
         }
 
-        $this->valid('latitude')->valid('longitude')->valid('level');
+        if (!isset($this->latitude) ||
+            !isset($this->longitude) ||
+            !isset($this->level)
+        ) {
+            return $this;
+        }
 
         $zone = self::getZoneByLocation(
             $this->latitude, $this->longitude, $this->level);
@@ -87,29 +87,31 @@ class GeoHex
 
         return $this->setCoords();
     }
-    public function setZoneByCode($code)
+    public function setCode($code)
     {
-        $this->code = $code;
-
-        $this->valid('code');
-
-        $zone = self::getZoneByCode($this->code);
+        $zone = self::getZoneByCode($code);
 
         $this->x = $zone['x'];
         $this->y = $zone['y'];
-        $this->level = $this->getLevel();
+        $this->code = $zone['code'];
+        $this->level = strlen($zone['code']) - 2;
         $this->latitude = $zone['latitude'];
         $this->longitude = $zone['longitude'];
 
         return $this->setCoords();
     }
-    public function setZoneByLevel($level)
+    public function setLevel($level)
     {
-        $this->level = $level;
-        $this->valid('level');
-
-        return $this->setZoneByLocation(
+        return $this->setLocation(
             $this->latitude, $this->longitude, $level);
+    }
+    public function setLatitude($latitude)
+    {
+        return $this->setLocation($latitude, $this->longitude);
+    }
+    public function setLongitude($longitude)
+    {
+        return $this->setLocation($this->latitude, $longitude);
     }
 
     /**
@@ -349,23 +351,18 @@ class GeoHex
      * private
      */
 
-    private function valid($key)
+    public function setCoords()
     {
-        if (!isset($this->$key)) {
-            require_once('GeoHex/Exception.php');
-            throw new GeoHex_Exception("not set $key.");
+        if (isset($this->code) &&
+            isset($this->latitude) &&
+            isset($this->longitude)
+        ) {
+            $this->coords = self::getHexCoordsByZone(array(
+                'code' => $this->code,
+                'latitude' => $this->latitude,
+                'longitude' => $this->longitude
+            ));
         }
-
-        return $this;
-    }
-    private function setCoords()
-    {
-        $this->valid('code')->valid('latitude')->valid('longitude');
-        $this->coords = self::getHexCoordsByZone(array(
-            'code' => $this->code,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude
-        ));
         return $this;
     }
 
