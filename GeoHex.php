@@ -67,37 +67,6 @@ class GeoHex
     {
         return strlen($this->code) - 2;
     }
-    public function getHexSize()
-    {
-        return $this->calcHexSize($this->getLevel() + 2);
-    }
-    public function getHexCoords()
-    {
-        $h_lat  = $this->latitude;
-        $h_lon  = $this->longitude;
-        $h_xy   = $this->loc2xy($h_lon, $h_lat);
-        $h_x    = $h_xy['x'];
-        $h_y    = $h_xy['y'];
-        $h_deg  = tan(pi() * (60 / 180));
-        $h_size = $this->getHexSize();
-
-        $h_top = $this->xy2locLatitude($h_x, $h_y + $h_deg * $h_size);
-        $h_btm = $this->xy2locLatitude($h_x, $h_y - $h_deg * $h_size);
-
-        $h_l  = $this->xy2locLongitude($h_x - 2 * $h_size, $h_y);
-        $h_r  = $this->xy2locLongitude($h_x + 2 * $h_size, $h_y);
-        $h_cl = $this->xy2locLongitude($h_x - 1 * $h_size, $h_y);
-        $h_cr = $this->xy2locLongitude($h_x + 1 * $h_size, $h_y);
-
-        return array(
-            array('latitude' =>  $h_lat, 'longitude' => $h_l),
-            array('latitude' =>  $h_top, 'longitude' => $h_cl),
-            array('latitude' =>  $h_top, 'longitude' => $h_cr),
-            array('latitude' =>  $h_lat, 'longitude' => $h_r),
-            array('latitude' =>  $h_btm, 'longitude' => $h_cr),
-            array('latitude' =>  $h_btm, 'longitude' => $h_cl)
-        );
-    }
     public function setZoneByLocation($latitude, $longitude, $level = null)
     {
         $this->latitude  = $latitude;
@@ -128,6 +97,7 @@ class GeoHex
 
         $this->x = $zone['x'];
         $this->y = $zone['y'];
+        $this->level = $this->getLevel();
         $this->latitude = $zone['latitude'];
         $this->longitude = $zone['longitude'];
 
@@ -347,31 +317,38 @@ class GeoHex
             'longitude' => $h_loc['lon']
         );
     }
+    public static function getHexCoordsByZone($zone)
+    {
+        $h_lat  = $zone['latitude'];
+        $h_lon  = $zone['longitude'];
+        $h_xy   = self::_loc2xy($h_lon, $h_lat);
+        $h_x    = $h_xy['x'];
+        $h_y    = $h_xy['y'];
+        $h_deg  = tan(pi() * (60 / 180));
+        $h_size = strlen($zone['code']);
+
+        $h_top = self::_xy2locLatitude($h_x, $h_y + $h_deg * $h_size);
+        $h_btm = self::_xy2locLatitude($h_x, $h_y - $h_deg * $h_size);
+
+        $h_l  = self::_xy2locLongitude($h_x - 2 * $h_size, $h_y);
+        $h_r  = self::_xy2locLongitude($h_x + 2 * $h_size, $h_y);
+        $h_cl = self::_xy2locLongitude($h_x - 1 * $h_size, $h_y);
+        $h_cr = self::_xy2locLongitude($h_x + 1 * $h_size, $h_y);
+
+        return array(
+            array('latitude' =>  $h_lat, 'longitude' => $h_l),
+            array('latitude' =>  $h_top, 'longitude' => $h_cl),
+            array('latitude' =>  $h_top, 'longitude' => $h_cr),
+            array('latitude' =>  $h_lat, 'longitude' => $h_r),
+            array('latitude' =>  $h_btm, 'longitude' => $h_cr),
+            array('latitude' =>  $h_btm, 'longitude' => $h_cl)
+        );
+    }
 
     /**
      * private
      */
 
-    private function calcHexSize($level)
-    {
-        return self::_calcHexSize($level);
-    }
-    private function loc2xy($lon, $lat)
-    {
-        return self::_loc2xy($lon, $lat);
-    }
-    private function xy2loc($x, $y)
-    {
-        return self::_xy2loc($x, $y);
-    }
-    private function xy2locLatitude($x, $y)
-    {
-        return self::_xy2locLatitude($x, $y);
-    }
-    private function xy2locLongitude($x, $y)
-    {
-        return self::_xy2locLongitude($x, $y);
-    }
     private function valid($key)
     {
         if (!isset($this->$key)) {
@@ -384,7 +361,11 @@ class GeoHex
     private function setCoords()
     {
         $this->valid('code')->valid('latitude')->valid('longitude');
-        $this->coords = $this->getHexCoords();
+        $this->coords = self::getHexCoordsByZone(array(
+            'code' => $this->code,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude
+        ));
         return $this;
     }
 
