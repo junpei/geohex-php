@@ -40,14 +40,37 @@ class GeoHex
      * @return GeoHex
      * @throws GeoHex_Exception
      */
-    public function __construct($parameters = array())
+    public function __construct()
     {
-        $keys = array('code', 'level', 'latitude', 'longitude');
+        switch (func_num_args()) {
+        case 3:
+            $args = func_get_args();
+            $this->latitude = $args[0];
+            $this->longitude = $args[1];
+            $this->level = $args[2];
+            break;
+        case 2:
+            $args = func_get_args();
+            $this->latitude = $args[0];
+            $this->longitude = $args[1];
+            break;
+        case 1:
+            $arg = func_get_arg(0);
 
-        foreach ($keys as $key) {
-            if (isset($parameters[$key])) {
-                $this->$key = $parameters[$key];
+            if (is_string($arg)) {
+                $this->code = $arg;
             }
+
+            else if (is_array($arg)) {
+                $keys = array('code', 'level', 'latitude', 'longitude');
+
+                foreach ($keys as $key) {
+                    if (isset($arg[$key])) {
+                        $this->$key = $arg[$key];
+                    }
+                }
+            }
+            break;
         }
 
         if (isset($this->latitude) && isset($this->longitude))
