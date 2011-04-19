@@ -5,18 +5,6 @@
 set_include_path('../');
 require_once('GeoHex.php');
 
-# convert $f to string as same precision as $reference_f
-function float_str($reference_f, $f) {
-	if (strpos($reference_f, ".")) {
-		$ary = explode(".", $reference_f);
-		$precision = strlen($ary[1]);
-	} else {
-		$precision = 0;
-	}
-	return sprintf("%." . $precision . "f", $f);
-		print $str_f.":".$ary[1].":%.".$precision."f:".$formatted_f . ":" . $f;
-}
-
 $succ_count = 0;
 $fail_count = 0;
 
@@ -53,14 +41,17 @@ while (!feof($fp)) {
 	list($lat, $lon, $level, $code) = explode(",", chop($line));
 	$g = new Geohex();
 	$g->setCode($code);
-	$lat_r = float_str($lat, $g->latitude);
-	$lon_r = float_str($lon, $g->longitude);
+	$g2 = new Geohex(array(
+		"latitude" => $g->latitude,
+		"longitude" => $g->longitude,
+		"level" => $g->level,
+	));
 
-	if ($lat === $lat_r and $lon === $lon_r and $g->level === (int)$level) {
+	if ($g2->code === $code) {
 		$succ_count ++;
 	} else {
 		print "FAILED TESTCASE: " . chop($line) . "\n";
-		print "  Expected:" . $lat . "," . $lon . "," . $level . " Actual:" . $lat_r . "," . $lon_r . "," . $g->level . "\n";
+		print "  Expected:" . $code . " Actual:" . $g2->code . "\n";
 		$fail_count ++;
 	}
 }
