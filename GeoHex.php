@@ -120,7 +120,7 @@ class GeoHex
         $this->x = $zone['x'];
         $this->y = $zone['y'];
         $this->code = $zone['code'];
-        $this->level = strlen($zone['code']) - 2;
+        $this->level = $zone['level'];
         $this->latitude = $zone['latitude'];
         $this->longitude = $zone['longitude'];
 
@@ -145,8 +145,8 @@ class GeoHex
      */
 
     public static function getZoneByLocation($lat, $lon, $level) {
-        $level   += 2;
-        $h_size   = self::_calcHexSize($level);
+        $level_   = $level + 2;
+        $h_size   = self::_calcHexSize($level_);
         $z_xy     = self::_loc2xy($lon, $lat);
         $lon_grid = $z_xy['x'];
         $lat_grid = $z_xy['y'];
@@ -197,8 +197,8 @@ class GeoHex
         $mod_x   = $h_x;
         $mod_y   = $h_y;
 
-        for ($i = 0; $i <= $level; $i++) {
-            $h_pow = pow(3, $level - $i);
+        for ($i = 0; $i <= $level_; $i++) {
+            $h_pow = pow(3, $level_ - $i);
 
             if ($mod_x >= ceil($h_pow / 2)) {
                 $code3_x[$i] = 2;
@@ -247,6 +247,7 @@ class GeoHex
             'x' => $h_x,
             'y' => $h_y,
             'code' => $h_code,
+            'level' => $level,
             'latitude' => $z_loc_y,
             'longitude' => $z_loc_x
         );
@@ -341,6 +342,7 @@ class GeoHex
             'x' => $h_x,
             'y' => $h_y,
             'code' => $code,
+            'level' => strlen($code) - 2,
             'latitude' => $h_loc['lat'],
             'longitude' => $h_loc['lon']
         );
