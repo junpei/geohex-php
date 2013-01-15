@@ -3,7 +3,7 @@
 # https://groups.google.com/group/geohex/web/test-casev3
 
 set_include_path('../');
-require_once('GeoHex.php');
+require_once('Geo/Hex.php');
 
 $succ_count = 0;
 $fail_count = 0;
@@ -16,7 +16,7 @@ while (!feof($fp)) {
 		continue; // for the last line
 	}
 	list($lat, $lon, $level, $code) = explode(",", chop($line));
-	$g = new Geohex(array(
+	$g = new \Geo\Hex(array(
 		'latitude' => $lat,
 		'longitude' => $lon,
 		'level' => $level,
@@ -39,9 +39,9 @@ while (!feof($fp)) {
 		continue; // for the last line
 	}
 	list($lat, $lon, $level, $code) = explode(",", chop($line));
-	$g = new Geohex();
+	$g = new \Geo\Hex();
 	$g->setCode($code);
-	$g2 = new Geohex(array(
+	$g2 = new \Geo\Hex(array(
 		"latitude" => $g->latitude,
 		"longitude" => $g->longitude,
 		"level" => $g->level,
