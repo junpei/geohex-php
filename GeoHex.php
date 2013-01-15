@@ -13,7 +13,7 @@
  */
 class GeoHex
 {
-    const VERSION = '3.00';
+    const VERSION = '3.01';
 
     const H_KEY  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     const H_BASE = 20037508.34;
@@ -332,10 +332,14 @@ class GeoHex
 
         if ($h_loc['lon'] > 180) {
             $h_loc['lon'] -= 360;
+            $h_x -= pow(3, $level);
+            $h_y += pow(3, $level);
         }
         
         else if ($h_loc['lon'] < -180) {
             $h_loc['lon'] += 360;
+            $h_x += pow(3, $level);
+            $h_y -= pow(3, $level);
         }
 
         return array(
