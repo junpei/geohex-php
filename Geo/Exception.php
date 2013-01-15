@@ -1,17 +1,19 @@
 <?php
 
+namespace Geo;
+
 /**
- * GeoHex_Exception
+ * \Geo\Exception
  * GeoHex by @sa2da (http://geogames.net) is licensed under Creative Commons BY-SA 2.1 Japan License.
  *
- * @category  GeoHex
- * @package   GeoHex
+ * @category  \Geo
+ * @package   \Geo
  * @copyright Copyright (c) 2011 Tonthidot Corporation. (http://www.tonchidot.com)
  * @license   http://creativecommons.org/licenses/by-sa/2.1/jp/
  * @author    KITA, Junpei
  * @version   $Id
  */
-class GeoHex_Exception extends Exception
+class Exception extends \Exception
 {
     /**
      * construct

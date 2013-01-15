@@ -1,17 +1,19 @@
 <?php
 
+namespace Geo;
+
 /**
- * GeoHex
+ * \Geo\Hex
  * GeoHex by @sa2da (http://geogames.net) is licensed under Creative Commons BY-SA 2.1 Japan License.
  *
- * @category  GeoHex
- * @package   GeoHex
+ * @category  \Geo
+ * @package   \Geo
  * @copyright Copyright (c) 2011 Tonthidot Corporation. (http://www.tonchidot.com)
  * @license   http://creativecommons.org/licenses/by-sa/2.1/jp/
  * @author    KITA, Junpei
  * @version   $Id
  */
-class GeoHex
+class Hex
 {
     const VERSION = '3.01';
 
@@ -37,8 +39,8 @@ class GeoHex
      *     'latitude'  => Float,
      *     'longitude' => Float
      * )
-     * @return GeoHex
-     * @throws GeoHex_Exception
+     * @return \Geo\Hex
+     * @throws \Geo\Exception
      */
     public function __construct()
     {
